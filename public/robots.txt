@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://cleanmybg.com
+
+# Sitemaps
+Sitemap: https://cleanmybg.com/sitemap.xml
