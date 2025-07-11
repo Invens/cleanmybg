@@ -5,6 +5,7 @@ import "react-before-after-slider-component/dist/build.css";
 import ClientProviders from "@/components/ClientProviders"; // adjust path as needed
 
 
+
 // Use the Google Font: Orbitron
 const orbitron = Orbitron({
   subsets: ["latin"],
