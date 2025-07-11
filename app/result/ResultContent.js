@@ -554,13 +554,14 @@ export default function Result() {
                   {maintainAspectRatio ? "Lock Aspect" : "Unlock Aspect"}
                 </button>
               </div>
+      <RemovalNote isLoggedIn={isLoggedIn} />
             </div>
           </div>
         </main>
       </div>
-      <Footer />
+    
       {/* --- Guest Note is now below Footer --- */}
-      <RemovalNote isLoggedIn={isLoggedIn} />
+        <Footer />
       <style jsx global>{`
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
         .font-inter {
