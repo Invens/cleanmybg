@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -11,6 +10,22 @@ import useImage from "use-image";
 
 import Header from "@/components/header/page";
 import Footer from "@/components/footer/page";
+
+// --- Guest Info Banner ---
+function RemovalNote({ isLoggedIn }) {
+  if (isLoggedIn) return null;
+  return (
+    <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-cyan-800 to-indigo-900 text-cyan-100 shadow-md">
+      <strong>Note:</strong> As a guest, you can remove background from <b>10 images every 10 minutes</b>.<br/>
+      <a
+        href="/login"
+        className="inline-block mt-2 px-4 py-2 bg-cyan-600 rounded-full text-white font-semibold shadow hover:bg-cyan-700 transition-all"
+      >
+        Login for Unlimited Removals
+      </a>
+    </div>
+  );
+}
 
 export default function Result() {
   const searchParams = useSearchParams();
@@ -203,7 +218,7 @@ export default function Result() {
     }
   }, [mainImage]);
 
-  // Process image for background removal
+  // --- MODIFIED: Handle 429 for rate limit ---
   const processImage = async (tab) => {
     try {
       setIsProcessing(true);
@@ -229,11 +244,17 @@ export default function Result() {
 
       if (isLoggedIn) await fetchCredits();
     } catch (err) {
-      console.error("Image processing error:", err);
-      alert(
-        err.response?.data?.message ||
+      if (err.response?.status === 429) {
+        alert(
+          err.response.data?.message ||
+          "Rate limit reached. Please wait or log in for unlimited removals."
+        );
+      } else {
+        alert(
+          err.response?.data?.message ||
           "Failed to process image. You might be out of credits or not logged in."
-      );
+        );
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -277,6 +298,8 @@ export default function Result() {
   return (
     <>
       <Header />
+      {/* --- Add the guest note/banner here --- */}
+      <RemovalNote isLoggedIn={isLoggedIn} />
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 to-cyan-900 flex flex-col items-center justify-center px-4 sm:px-6 py-12 font-inter">
         <main className="w-full max-w-7xl flex flex-col lg:flex-row gap-6">
           {/* Left Side: Canvas & Controls */}

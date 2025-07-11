@@ -164,12 +164,12 @@ function Header() {
             </>
           ) : (
             <>
-              <Link href="/login" className="text-sm text-gray-200 hover:text-cyan-400 transition-colors duration-200">
+              {/* <Link href="/login" className="text-sm text-gray-200 hover:text-cyan-400 transition-colors duration-200">
                 Login
               </Link>
               <Link href="/signup" className="text-sm text-gray-200 hover:text-cyan-400 transition-colors duration-200">
                 Signup
-              </Link>
+              </Link> */}
               <button
                 onClick={handleGoogleLogin}
                 className="flex items-center space-x-2 bg-[#ffffff] text-black px-4 py-2 rounded-lg hover:bg-[#3578E5] transition-colors duration-200"
