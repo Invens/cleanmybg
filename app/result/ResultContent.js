@@ -12,17 +12,21 @@ import Header from "@/components/header/page";
 import Footer from "@/components/footer/page";
 
 // --- Guest Info Banner ---
+// Appears at the very bottom (below Footer)
 function RemovalNote({ isLoggedIn }) {
   if (isLoggedIn) return null;
   return (
-    <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-cyan-800 to-indigo-900 text-cyan-100 shadow-md">
-      <strong>Note:</strong> As a guest, you can remove background from <b>10 images every 10 minutes</b>.<br/>
-      <a
-        href="/login"
-        className="inline-block mt-2 px-4 py-2 bg-cyan-600 rounded-full text-white font-semibold shadow hover:bg-cyan-700 transition-all"
-      >
-        Login for Unlimited Removals
-      </a>
+    <div className="w-full flex justify-center px-2">
+      <div className="max-w-2xl w-full mb-6 p-3 rounded-xl bg-gradient-to-r from-cyan-900 via-indigo-900 to-cyan-900 text-cyan-100 shadow-md text-center text-base sm:text-lg">
+        <b>Note:</b> As a guest, you can remove background from <b>10 images every 10 minutes</b>.
+        <br />
+        <a
+          href="/login"
+          className="inline-block mt-3 px-4 py-2 bg-cyan-600 rounded-full text-white font-semibold shadow hover:bg-cyan-700 transition-all"
+        >
+          Login for Unlimited Removals
+        </a>
+      </div>
     </div>
   );
 }
@@ -298,259 +302,265 @@ export default function Result() {
   return (
     <>
       <Header />
-      {/* --- Add the guest note/banner here --- */}
-      <RemovalNote isLoggedIn={isLoggedIn} />
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 to-cyan-900 flex flex-col items-center justify-center px-4 sm:px-6 py-12 font-inter">
-        <main className="w-full max-w-7xl flex flex-col lg:flex-row gap-6">
-          {/* Left Side: Canvas & Controls */}
-          <div className="lg:w-2/3 w-full">
-            <div
-              ref={containerRef}
-              className="relative rounded-3xl overflow-hidden glass-effect shadow-lg transition-all duration-300"
-              style={{ width: `${stageDimensions.width}px`, height: `${stageDimensions.height}px` }}
-            >
-              <Stage
-                ref={stageRef}
-                width={width}
-                height={height}
-                className="absolute top-0 left-0"
-              >
-                <Layer>
-                  {bgColor && <Rect x={0} y={0} width={width} height={height} fill={bgColor} />}
-                  {bgImage && (
-                    <KonvaImage
-                      image={bgImage}
-                      width={width}
-                      height={height}
-                      listening={false}
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 to-cyan-900 flex flex-col items-center justify-center px-1 sm:px-4 py-6 font-inter">
+        <main className="w-full max-w-7xl flex flex-col lg:flex-row lg:gap-6 gap-2">
+          {/* On mobile: Column reverse, so background panel comes below canvas */}
+          <div className="flex flex-col-reverse lg:flex-row w-full gap-4">
+            {/* Right Side: Background Options & Remove BG (mobile: comes below) */}
+            <div className="lg:w-1/3 w-full flex flex-col gap-4">
+              <div className="glass-effect p-4 sm:p-6 rounded-2xl shadow-xl transition-all duration-300">
+                <div className="flex justify-between items-center mb-5">
+                  <div className="flex gap-4 sm:gap-6">
+                    <button
+                      className={`text-base sm:text-lg font-semibold transition-colors duration-200 ${
+                        activeTabType === "Photo"
+                          ? "text-cyan-300 border-b-2 border-cyan-300"
+                          : "text-gray-300 hover:text-cyan-200"
+                      }`}
+                      onClick={() => setActiveTabType("Photo")}
+                    >
+                      Photo
+                    </button>
+                    <button
+                      className={`text-base sm:text-lg font-semibold transition-colors duration-200 ${
+                        activeTabType === "Colour"
+                          ? "text-cyan-300 border-b-2 border-cyan-300"
+                          : "text-gray-300 hover:text-cyan-200"
+                      }`}
+                      onClick={() => setActiveTabType("Colour")}
+                    >
+                      Colour
+                    </button>
+                  </div>
+                  <button className="text-gray-300 hover:text-cyan-200 text-xl sm:text-2xl transition-colors duration-200">
+                    ×
+                  </button>
+                </div>
+                {activeTabType === "Photo" && (
+                  <>
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search backgrounds..."
+                      className="w-full p-2 sm:p-3 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-200"
                     />
-                  )}
-                </Layer>
-                <Layer>
-                  {tabs.find((t) => t.id === activeTab)?.processedImageUrl && (
-                    <>
-                      <KonvaImage
-                        image={mainImage}
-                        x={imgX}
-                        y={imgY}
-                        width={imgW}
-                        height={imgH}
-                        draggable
-                        ref={imageRef}
-                      />
-                      <Transformer ref={transformerRef} />
-                    </>
-                  )}
-                </Layer>
-              </Stage>
-              {isProcessing && (
-                <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center z-20">
-                  <p className="text-cyan-300 font-semibold text-lg animate-pulse">
-                    Processing Image...
-                  </p>
-                </div>
-              )}
-              {/* Resize Handles */}
-              <div
-                className="absolute bottom-0 right-0 w-4 h-4 bg-cyan-500 rounded-full cursor-se-resize"
-                onMouseDown={(e) => handleResize(e, "bottom-right")}
-              />
-              <div
-                className="absolute top-0 right-0 w-4 h-4 bg-cyan-500 rounded-full cursor-ne-resize"
-                onMouseDown={(e) => handleResize(e, "top-right")}
-              />
-              <div
-                className="absolute bottom-0 left-0 w-4 h-4 bg-cyan-500 rounded-full cursor-sw-resize"
-                onMouseDown={(e) => handleResize(e, "bottom-left")}
-              />
-            </div>
-            <div className="flex flex-wrap justify-center gap-3 mt-6">
-              <div className="flex items-center gap-2">
-                <label className="text-gray-200 text-sm">Width:</label>
-                <input
-                  type="number"
-                  value={pixelWidth}
-                  onChange={(e) => handlePixelChange("width", e.target.value)}
-                  className="w-20 p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  min={MIN_WIDTH}
-                  max={MAX_WIDTH}
-                />
-                <span className="text-gray-200">px</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-gray-200 text-sm">Height:</label>
-                <input
-                  type="number"
-                  value={pixelHeight}
-                  onChange={(e) => handlePixelChange("height", e.target.value)}
-                  className="w-20 p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  min={MIN_HEIGHT}
-                  max={MAX_HEIGHT}
-                />
-                <span className="text-gray-200">px</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-gray-200 text-sm">Aspect:</label>
-                <select
-                  value={selectedAspectRatio}
-                  onChange={handleAspectRatioChange}
-                  className="p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                >
-                  {aspectRatios.map((ratio) => (
-                    <option key={ratio.label} value={ratio.label}>
-                      {ratio.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                onClick={handleZoomOut}
-                className="text-cyan-300 text-2xl bg-gray-800 bg-opacity-50 w-12 h-12 rounded-full hover:bg-opacity-70 transition-all duration-200 glow-hover"
-              >
-                −
-              </button>
-              <button
-                onClick={handleZoomIn}
-                className="text-cyan-300 text-2xl bg-gray-800 bg-opacity-50 w-12 h-12 rounded-full hover:bg-opacity-70 transition-all duration-200 glow-hover"
-              >
-                +
-              </button>
-              <button
-                onClick={() => setScale(1)}
-                className="text-cyan-300 text-xl bg-gray-800 bg-opacity-50 w-12 h-12 rounded-full hover:bg-opacity-70 transition-all duration-200 glow-hover"
-              >
-                ⟳
-              </button>
-              <button
-                onClick={handleDownload}
-                className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-full font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all duration-200 glow-hover"
-              >
-                Download
-              </button>
-              <button
-                onClick={() => setMaintainAspectRatio(!maintainAspectRatio)}
-                className={`px-4 py-2 rounded-full font-semibold transition-all duration-200 glow-hover ${
-                  maintainAspectRatio
-                    ? "bg-cyan-500 text-white"
-                    : "bg-gray-700 text-gray-200"
-                }`}
-              >
-                {maintainAspectRatio ? "Lock Aspect" : "Unlock Aspect"}
-              </button>
-            </div>
-          </div>
+                    <p className="text-gray-300 text-xs sm:text-sm mb-3">
+                      Explore 30+ million backgrounds powered by Pexels
+                    </p>
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3 max-h-64 sm:max-h-96 overflow-y-auto">
+                      {bgImages.map((src, idx) => (
+                        <img
+                          key={idx}
+                          src={src}
+                          className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border border-gray-700 cursor-pointer hover:scale-105 transition-transform duration-200 glow-hover"
+                          onClick={() => {
+                            setBgImageUrl(src);
+                            setBgColor(null);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
 
-          {/* Right Side: Background Options & Remove BG */}
-          <div className="lg:w-1/3 w-full flex flex-col gap-6">
-            <div className="glass-effect p-6 rounded-3xl shadow-xl transition-all duration-300">
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex gap-6">
-                  <button
-                    className={`text-lg font-semibold transition-colors duration-200 ${
-                      activeTabType === "Photo"
-                        ? "text-cyan-300 border-b-2 border-cyan-300"
-                        : "text-gray-300 hover:text-cyan-200"
-                    }`}
-                    onClick={() => setActiveTabType("Photo")}
-                  >
-                    Photo
-                  </button>
-                  <button
-                    className={`text-lg font-semibold transition-colors duration-200 ${
-                      activeTabType === "Colour"
-                        ? "text-cyan-300 border-b-2 border-cyan-300"
-                        : "text-gray-300 hover:text-cyan-200"
-                    }`}
-                    onClick={() => setActiveTabType("Colour")}
-                  >
-                    Colour
-                  </button>
-                </div>
-                <button className="text-gray-300 hover:text-cyan-200 text-2xl transition-colors duration-200">
-                  ×
+                {activeTabType === "Colour" && (
+                  <div className="mb-3">
+                    <h4 className="text-cyan-300 font-semibold text-base sm:text-lg mb-2 sm:mb-4">
+                      Select a Color
+                    </h4>
+                    <div className="flex gap-2 sm:gap-3 flex-wrap">
+                      <input
+                        type="color"
+                        value={bgColor || "#ffffff"}
+                        onChange={(e) => {
+                          setBgImageUrl(null);
+                          setBgColor(e.target.value);
+                        }}
+                        className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-gray-700 rounded-lg cursor-pointer"
+                      />
+                      {[
+                        "#ffffff",
+                        "#000000",
+                        "#f87171",
+                        "#60a5fa",
+                        "#34d399",
+                        "#facc15",
+                        "#a855f7",
+                        "#ec4899",
+                        "#22d3ee",
+                        "#fb923c",
+                      ].map((color) => (
+                        <div
+                          key={color}
+                          className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-gray-700 rounded-lg cursor-pointer hover:scale-105 transition-transform duration-200 glow-hover"
+                          style={{ backgroundColor: color }}
+                          onClick={() => {
+                            setBgImageUrl(null);
+                            setBgColor(color);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <button
+                  onClick={handleRemoveBackground}
+                  className="w-full bg-gradient-to-r from-gray-700 to-gray-800 text-gray-200 py-2 sm:py-3 rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 glow-hover mt-2"
+                >
+                  Remove Background
                 </button>
               </div>
+            </div>
 
-              {activeTabType === "Photo" && (
-                <>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search backgrounds..."
-                    className="w-full p-3 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-200"
-                  />
-                  <p className="text-gray-300 text-sm mb-4">
-                    Explore 30+ million backgrounds powered by Pexels
-                  </p>
-                  <div className="grid grid-cols-3 gap-3 max-h-96 overflow-y-auto">
-                    {bgImages.map((src, idx) => (
-                      <img
-                        key={idx}
-                        src={src}
-                        className="w-20 h-20 object-cover rounded-lg border border-gray-700 cursor-pointer hover:scale-105 transition-transform duration-200 glow-hover"
-                        onClick={() => {
-                          setBgImageUrl(src);
-                          setBgColor(null);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {activeTabType === "Colour" && (
-                <div className="mb-6">
-                  <h4 className="text-cyan-300 font-semibold text-lg mb-4">
-                    Select a Color
-                  </h4>
-                  <div className="flex gap-3 flex-wrap">
-                    <input
-                      type="color"
-                      value={bgColor || "#ffffff"}
-                      onChange={(e) => {
-                        setBgImageUrl(null);
-                        setBgColor(e.target.value);
-                      }}
-                      className="w-12 h-12 border-2 border-gray-700 rounded-lg cursor-pointer"
-                    />
-                    {[
-                      "#ffffff",
-                      "#000000",
-                      "#f87171",
-                      "#60a5fa",
-                      "#34d399",
-                      "#facc15",
-                      "#a855f7",
-                      "#ec4899",
-                      "#22d3ee",
-                      "#fb923c",
-                    ].map((color) => (
-                      <div
-                        key={color}
-                        className="w-10 h-10 border-2 border-gray-700 rounded-lg cursor-pointer hover:scale-105 transition-transform duration-200 glow-hover"
-                        style={{ backgroundColor: color }}
-                        onClick={() => {
-                          setBgImageUrl(null);
-                          setBgColor(color);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <button
-                onClick={handleRemoveBackground}
-                className="w-full bg-gradient-to-r from-gray-700 to-gray-800 text-gray-200 py-3 rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 glow-hover"
+            {/* Left Side: Canvas & Controls */}
+            <div className="lg:w-2/3 w-full mb-4 lg:mb-0">
+              <div
+                ref={containerRef}
+                className="relative rounded-2xl overflow-hidden glass-effect shadow-lg transition-all duration-300 mx-auto"
+                style={{
+                  width: `${stageDimensions.width}px`,
+                  height: `${stageDimensions.height}px`,
+                  maxWidth: "100vw",
+                  minHeight: "200px",
+                }}
               >
-                Remove Background
-              </button>
+                <Stage
+                  ref={stageRef}
+                  width={width}
+                  height={height}
+                  className="absolute top-0 left-0"
+                >
+                  <Layer>
+                    {bgColor && <Rect x={0} y={0} width={width} height={height} fill={bgColor} />}
+                    {bgImage && (
+                      <KonvaImage
+                        image={bgImage}
+                        width={width}
+                        height={height}
+                        listening={false}
+                      />
+                    )}
+                  </Layer>
+                  <Layer>
+                    {tabs.find((t) => t.id === activeTab)?.processedImageUrl && (
+                      <>
+                        <KonvaImage
+                          image={mainImage}
+                          x={imgX}
+                          y={imgY}
+                          width={imgW}
+                          height={imgH}
+                          draggable
+                          ref={imageRef}
+                        />
+                        <Transformer ref={transformerRef} />
+                      </>
+                    )}
+                  </Layer>
+                </Stage>
+                {isProcessing && (
+                  <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center z-20">
+                    <p className="text-cyan-300 font-semibold text-base sm:text-lg animate-pulse">
+                      Processing Image...
+                    </p>
+                  </div>
+                )}
+                {/* Resize Handles */}
+                <div
+                  className="absolute bottom-0 right-0 w-4 h-4 bg-cyan-500 rounded-full cursor-se-resize"
+                  onMouseDown={(e) => handleResize(e, "bottom-right")}
+                />
+                <div
+                  className="absolute top-0 right-0 w-4 h-4 bg-cyan-500 rounded-full cursor-ne-resize"
+                  onMouseDown={(e) => handleResize(e, "top-right")}
+                />
+                <div
+                  className="absolute bottom-0 left-0 w-4 h-4 bg-cyan-500 rounded-full cursor-sw-resize"
+                  onMouseDown={(e) => handleResize(e, "bottom-left")}
+                />
+              </div>
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-4">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <label className="text-gray-200 text-xs sm:text-sm">Width:</label>
+                  <input
+                    type="number"
+                    value={pixelWidth}
+                    onChange={(e) => handlePixelChange("width", e.target.value)}
+                    className="w-16 sm:w-20 p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    min={MIN_WIDTH}
+                    max={MAX_WIDTH}
+                  />
+                  <span className="text-gray-200">px</span>
+                </div>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <label className="text-gray-200 text-xs sm:text-sm">Height:</label>
+                  <input
+                    type="number"
+                    value={pixelHeight}
+                    onChange={(e) => handlePixelChange("height", e.target.value)}
+                    className="w-16 sm:w-20 p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    min={MIN_HEIGHT}
+                    max={MAX_HEIGHT}
+                  />
+                  <span className="text-gray-200">px</span>
+                </div>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <label className="text-gray-200 text-xs sm:text-sm">Aspect:</label>
+                  <select
+                    value={selectedAspectRatio}
+                    onChange={handleAspectRatioChange}
+                    className="p-2 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  >
+                    {aspectRatios.map((ratio) => (
+                      <option key={ratio.label} value={ratio.label}>
+                        {ratio.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  onClick={handleZoomOut}
+                  className="text-cyan-300 text-2xl bg-gray-800 bg-opacity-50 w-10 h-10 sm:w-12 sm:h-12 rounded-full hover:bg-opacity-70 transition-all duration-200 glow-hover"
+                >
+                  −
+                </button>
+                <button
+                  onClick={handleZoomIn}
+                  className="text-cyan-300 text-2xl bg-gray-800 bg-opacity-50 w-10 h-10 sm:w-12 sm:h-12 rounded-full hover:bg-opacity-70 transition-all duration-200 glow-hover"
+                >
+                  +
+                </button>
+                <button
+                  onClick={() => setScale(1)}
+                  className="text-cyan-300 text-xl bg-gray-800 bg-opacity-50 w-10 h-10 sm:w-12 sm:h-12 rounded-full hover:bg-opacity-70 transition-all duration-200 glow-hover"
+                >
+                  ⟳
+                </button>
+                <button
+                  onClick={handleDownload}
+                  className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all duration-200 glow-hover"
+                >
+                  Download
+                </button>
+                <button
+                  onClick={() => setMaintainAspectRatio(!maintainAspectRatio)}
+                  className={`px-3 py-2 rounded-full font-semibold transition-all duration-200 glow-hover ${
+                    maintainAspectRatio
+                      ? "bg-cyan-500 text-white"
+                      : "bg-gray-700 text-gray-200"
+                  }`}
+                >
+                  {maintainAspectRatio ? "Lock Aspect" : "Unlock Aspect"}
+                </button>
+              </div>
             </div>
           </div>
         </main>
       </div>
       <Footer />
+      {/* --- Guest Note is now below Footer --- */}
+      <RemovalNote isLoggedIn={isLoggedIn} />
       <style jsx global>{`
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
         .font-inter {
